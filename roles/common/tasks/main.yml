@@ -1,0 +1,70 @@
+---
+- name: group exist
+  user: name={{ item.name }}
+  with_items: group
+  tags: group
+  sudo: yes
+
+- name: users exist
+  user: name={{ item.name }} uid={{ item.uid }} state=present password={{ item.password }} groups={{ item.groups }} createhome=yes shell=/bin/bash
+  with_items: users
+  tags: users
+  sudo: yes
+
+- name: ~/.ssh for users exsit
+  file: path="/home/{{ item.name }}/.ssh" state=directory owner={{ item.name }} group={{ item.name }} mode=0700
+  with_items: users
+  tags: users
+  sudo: yes
+
+- name: authorized keys is deployed
+  copy: src="authorized/authorized_keys_for_{{ item.name }}" dest="/home/{{ item.name }}/.ssh/authorized_keys" owner={{ item.name }} group={{ item.name }} mode=0600
+  with_items: users
+  tags: users
+  sudo: yes
+
+- name: sudo configured
+  copy: src="sudoers" dest="/etc/sudoers" owner=root group=root mode=0440
+  sudo: yes
+
+- name: sshd is configured
+  notify: restart sshd
+  copy: src="sshd_config" dest="/etc/ssh/sshd_config" owner=root group=root mode=0600
+  tags: sshd
+  sudo: yes
+
+- name: sshd is enabled and started
+  service: name=ssh state=running enabled=yes
+  tags: sshd
+  sudo: yes
+
+- name: Install nginx (access not allowed by firewall)
+  apt: pkg=nginx state=present update_cache=yes
+  tags: nginx
+  sudo: yes
+
+- name: Install nginx (User directory)
+  copy: src="nginx/nginx.conf" dest="/etc/nginx/nginx.conf" owner=root group=root mode=0600
+  tags: nginx
+  sudo: yes
+
+- name: Install nginx (User directory)
+  notify: restart nginx
+  copy: src="nginx/default.conf" dest="/etc/nginx/conf.d/default.conf" owner=root group=root mode=0600
+  tags: nginx
+  sudo: yes
+
+- name: Install ufw (access not allowed by firewall)
+  notify: restart ufw
+  apt: pkg=ufw state=present update_cache=yes
+  tags: ufw
+  sudo: yes
+
+- include: user_hp_dir.yml
+
+##- name: Allow HTTP/HTTPS
+##  ufw: rule=allow port=80
+##  tags: ufw
+##  sudo: yes
+##
+

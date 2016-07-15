@@ -1,0 +1,4 @@
+iptables:
+  accept_tcp_rules:
+    - { port: 22 }
+    - { port: 80 }

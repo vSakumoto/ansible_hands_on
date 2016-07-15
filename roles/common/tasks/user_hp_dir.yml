@@ -1,0 +1,16 @@
+---
+- name: sakumoto hp directory
+  file: path="/home/sakumoto_shota/public_html" state=directory owner=sakumoto_shota group=sakumoto_shota mode=0775
+  tags: nginx
+  sudo: yes
+
+- name: Upload Test File
+  copy: src="sakumoto/index.html" dest="/home/sakumoto_shota/public_html/index.html" owner=sakumoto_shota group=sakumoto_shota mode=0644
+  tags: nginx
+  sudo: yes
+
+- name: Allow HTTP/HTTPS
+  ufw: rule=allow port=80
+  tags: ufw
+  sudo: yes
+

@@ -1,0 +1,10 @@
+group:
+  - { name: kitchen }
+  - { name: wheel }
+
+#
+# example: password hash `openssl passwd -1 hoge`
+#
+users:
+  - { name: vSakumoto,  uid: 10001,  password: "$1$Ej.4RaMe$cnK0nj.s/UjtxclnvaerH/",  groups: "kitchen,wheel" }
+  - { name: xshsaku,  uid: 10002,  password: "$1$kYHEa5.X$M4tjZuX8Y/ZLYJM3sP0H9.",  groups: "kitchen,wheel" }

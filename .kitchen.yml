@@ -1,0 +1,47 @@
+---
+driver:
+  name: docker
+  user: ubuntu
+  use_sudo: false
+
+provisioner:
+  name: ansible_playbook
+  playbook: site.yml
+  roles_path: ./roles
+  group_vars_path: ./group_vars
+  host_vars_path: ./host_vars
+  additional_copy_path:
+    - webservers.yml
+  hosts: webservers
+  dns:
+    - 8.8.8.8
+    - 8.8.4.4
+  #require_ansible_repo: true
+  ansible_verbose: true
+  require_ansible_omnibus: true
+  require_ruby_for_busser: true
+
+#
+# 本来であればansible_omnibus / busserで入るはずが動作しない。
+# 以下で強制的にインストールを実行
+#
+platforms:
+  - name: ubuntu-14.04
+    driver_config:
+      #socket: tcp://localhost:2375
+      username: kitchen
+      provision_command:
+        - apt-get -y install apt-utils
+        - apt-get -y install software-properties-common python-software-properties
+        - add-apt-repository ppa:rquillo/ansible
+        - curl -L https://www.opscode.com/chef/install.sh | bash
+        - apt-get update
+        - apt-get -y install ansible python-selinux
+        - apt-get install -y build-essential bash debianutils dnsutils net-tools telnet tar cron
+
+verifier:
+  ruby_bindir: '/usr/bin'
+
+suites:
+  - name: default
+    attributes:
