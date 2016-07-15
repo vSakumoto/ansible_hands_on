@@ -1,0 +1,7 @@
+.kitchen/
+Gemfile.lock
+chefignore
+*.retry
+*DS_Store
+*.swp
+.kitchen.local.yml
