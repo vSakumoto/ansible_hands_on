@@ -5,3 +5,4 @@ chefignore
 *DS_Store
 *.swp
 .kitchen.local.yml
+*.log
